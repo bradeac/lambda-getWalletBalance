@@ -1,29 +1,30 @@
 import ccxt from 'ccxt'
 
 export const getWalletBalance = async (event, context, callback) => {
-    const response = await get('hitbtc', 'BTC')
+    const response = await get('kucoin', 'BTC')
 
 	callback(null, response);
 }
 
 const get = async (exchange, coin) => {
-    let exchangeObj = {}
-
     try {
-        switch(exchange) {
-            case 'hitbtc': {
-                exchangeObj = new ccxt.hitbtc ({
-                    'apiKey': process.env.hitbtc_api_key,
-                    'secret': process.env.hitbtc_secret_key,
-                })
+        const exchangeObj = await instantiateExchange(exchange)
 
-                let balance = await exchangeObj.fetchBalance()
-    
+        if (exchangeObj) {
+            let balance = await exchangeObj.fetchBalance()
+
+            if (balance.total) {
                 return balance.total[coin]
             }
-            default: 
-                return 'Incorrect exchange selected'
+
+            if (balance[coin]) {
+                return balance[coin]
+            }
+
+            return balance
         }
+
+        return null
 
     } catch (e) {
 
@@ -43,4 +44,51 @@ const get = async (exchange, coin) => {
             throw e;
         }
     }        
+}
+
+const instantiateExchange = (exchange) => {
+    let exchangeObj = null
+
+    switch(exchange) {
+        case 'hitbtc': {
+            exchangeObj = new ccxt.hitbtc ({
+                'apiKey': process.env.hitbtc_api_key,
+                'secret': process.env.hitbtc_secret_key,
+            })
+
+            break
+        }
+
+        case 'binance': {
+            exchangeObj = new ccxt.binance ({
+                'apiKey': process.env.binance_api_key,
+                'secret': process.env.binance_secret_key,
+            })
+
+            break
+        }
+
+        case 'liqui': {
+            exchangeObj = new ccxt.liqui ({
+                'apiKey': process.env.liqui_api_key,
+                'secret': process.env.liqui_secret_key,
+            })
+
+            break
+        }
+
+        case 'kucoin': {
+            exchangeObj = new ccxt.kucoin ({
+                'apiKey': process.env.kucoin_api_key,
+                'secret': process.env.kucoin_secret_key,
+            })
+
+            break
+        }
+
+        default: 
+            break
+    }
+
+    return exchangeObj
 }

@@ -1,14 +1,20 @@
 import ccxt from 'ccxt'
 
 export const getWalletBalance = async (event, context, callback) => {
-    const response = await get('kucoin', 'BTC')
+    const { exchange, coin } = event.params.path || { exchange: null, coin: null }
 
-	callback(null, response);
+    if (exchange && coin) {
+        const response = await get(exchange, coin)
+
+        callback(null, response)
+    }
+
+    callback(null, null)
 }
 
 const get = async (exchange, coin) => {
     try {
-        const exchangeObj = await instantiateExchange(exchange)
+        const exchangeObj = instantiateExchange(exchange)
 
         if (exchangeObj) {
             let balance = await exchangeObj.fetchBalance()

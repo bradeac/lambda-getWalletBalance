@@ -50,3 +50,6 @@ env.yml
 
 # Jetbrains IDEs
 .idea
+
+#AWS
+crypto-dev-getWalletBalance.yaml

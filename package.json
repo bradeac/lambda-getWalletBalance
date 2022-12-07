@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "babel-runtime": "^6.26.0",
-    "ccxt": "^1.15.5",
+    "ccxt": "^1.95.43",
     "source-map-support": "^0.4.18"
   }
 }
